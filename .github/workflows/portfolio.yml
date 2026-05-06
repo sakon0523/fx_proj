@@ -1,0 +1,53 @@
+name: Portfolio Automation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  portfolio-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore private portfolio config
+        run: |
+          mkdir -p config
+          printf "%s" "${{ secrets.PORTFOLIO_PRIVATE_YAML }}" > config/portfolio.private.yaml
+
+      - name: Fetch latest prices
+        run: python run.py --action fetch
+
+      - name: Generate reports and signals
+        run: python run.py --action all
+
+      - name: Determine email mode
+        id: email_mode
+        run: |
+          JST_HOUR=$(TZ=Asia/Tokyo date +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=daily_digest" >> "$GITHUB_OUTPUT"
+          elif [ "$JST_HOUR" = "08" ]; then
+            echo "mode=daily_digest" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=high_only" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Send Gmail report
+        if: ${{ secrets.GMAIL_SMTP_USER != '' && secrets.GMAIL_SMTP_APP_PASSWORD != '' && secrets.GMAIL_TO != '' }}
+        env:
+          GMAIL_SMTP_USER: ${{ secrets.GMAIL_SMTP_USER }}
+          GMAIL_SMTP_APP_PASSWORD: ${{ secrets.GMAIL_SMTP_APP_PASSWORD }}
+          GMAIL_TO: ${{ secrets.GMAIL_TO }}
+        run: python run.py --action email --email-mode ${{ steps.email_mode.outputs.mode }}
