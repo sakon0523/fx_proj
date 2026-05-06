@@ -42,6 +42,15 @@ python run.py --action summary
 # 異常検知
 python run.py --action signals
 
+# ニュース取得
+python run.py --action news-fetch
+
+# ニュース要約
+python run.py --action news-summary
+
+# ニュース取得 + 要約
+python run.py --action news
+
 # 集計・シグナル・JSON 出力
 python run.py --action all
 
@@ -68,8 +77,8 @@ python run.py --action email --email-mode high_only
 `.github/workflows/portfolio.yml` で自動実行します。
 
 - 毎時 `00分` に実行
-- `08:00 JST` は日報メール送信
-- それ以外は `high` シグナルがある時だけ通知
+- `08:00 JST` のスケジュール実行時にだけ Gemini ニュース要約を実行
+- それ以外はニュース要約を実行しない
 - `main` への push でも実行
 - 手動実行 `workflow_dispatch` でも実行
 
@@ -90,6 +99,13 @@ Gmail 通知を使う場合:
   Google のアプリ パスワード
 - `GMAIL_TO`
   送信先メールアドレス
+
+ニュース要約を使う場合:
+
+- `GEMINI_API_KEY`
+  Gemini API キー
+- `GEMINI_NEWS_MODEL`
+  任意。未指定時は `gemini-2.5-flash`
 
 `GMAIL_SMTP_APP_PASSWORD` には通常のログインパスワードではなく、Google アカウントで発行したアプリ パスワードを使います。
 

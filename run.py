@@ -21,7 +21,18 @@ def main():
     parser.add_argument(
         "--action",
         default="summary",
-        choices=["summary", "json", "viz", "fetch", "signals", "email", "all"],
+        choices=[
+            "summary",
+            "json",
+            "viz",
+            "fetch",
+            "signals",
+            "news-fetch",
+            "news-summary",
+            "news",
+            "email",
+            "all",
+        ],
         help="実行するアクション",
     )
     parser.add_argument("--output", default="data/", help="出力ディレクトリ")
@@ -29,6 +40,16 @@ def main():
         "--price-snapshot",
         default="data/price_snapshot.json",
         help="価格スナップショットJSONの出力先/読込先",
+    )
+    parser.add_argument(
+        "--news-snapshot",
+        default="data/news_snapshot.json",
+        help="ニューススナップショットJSONの出力先/読込先",
+    )
+    parser.add_argument(
+        "--news-summary",
+        default="data/news_summary.json",
+        help="ニュース要約JSONの出力先/読込先",
     )
     parser.add_argument(
         "--email-mode",
@@ -41,8 +62,18 @@ def main():
         action="store_true",
         help="標準出力を最小限にする",
     )
+    parser.add_argument(
+        "--enable-news-summary",
+        default="true",
+        help="ニュース要約処理を有効にするかどうか (true/false)",
+    )
 
     args = parser.parse_args()
+    args.enable_news_summary = str(args.enable_news_summary).lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
     if args.action in ["fetch", "all"]:
         try:
@@ -57,6 +88,47 @@ def main():
             fetcher.save_snapshot(args.price_snapshot, verbose=not args.quiet)
         except RuntimeError as exc:
             raise SystemExit(f"価格取得に失敗しました: {exc}") from exc
+
+    if args.action in ["news-fetch", "news", "all"]:
+        try:
+            from news_fetcher import NewsFetcher
+        except ImportError as exc:
+            raise SystemExit(
+                "ニュース取得には yfinance が必要です。`pip install -r requirements.txt` を実行してください。"
+            ) from exc
+
+        news_fetcher = NewsFetcher(args.config)
+        news_fetcher.save_snapshot(args.news_snapshot, verbose=not args.quiet)
+
+    if args.action in ["news-summary", "news"]:
+        if not args.enable_news_summary:
+            if not args.quiet:
+                print("ニュース要約処理をスキップしました。")
+        else:
+            try:
+                from news_summarizer import NewsSummarizer
+            except ImportError as exc:
+                raise SystemExit(
+                    "ニュース要約には openai パッケージが必要です。`pip install -r requirements.txt` を実行してください。"
+                ) from exc
+
+            summarizer = NewsSummarizer(news_snapshot_path=args.news_snapshot)
+            summarizer.save_summary(args.news_summary, verbose=not args.quiet)
+
+    elif args.action == "all":
+        try:
+            from news_summarizer import NewsSummarizer
+        except ImportError:
+            summarizer = None
+        else:
+            if args.enable_news_summary and Path(args.news_snapshot).exists():
+                try:
+                    summarizer = NewsSummarizer(news_snapshot_path=args.news_snapshot)
+                    summarizer.save_summary(args.news_summary, verbose=not args.quiet)
+                except RuntimeError:
+                    pass
+            elif not args.quiet:
+                print("ニュース要約処理をスキップしました。")
 
     manager = PortfolioManager(args.config, price_snapshot_path=args.price_snapshot)
 
@@ -88,6 +160,7 @@ def main():
             str(portfolio_status_path),
             str(signals_path),
             mode=args.email_mode,
+            news_summary_path=args.news_summary,
             verbose=not args.quiet,
         )
 

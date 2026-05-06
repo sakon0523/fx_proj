@@ -51,7 +51,27 @@ class EmailNotifier:
             f"/ high {high_total} / signals {signal_total}"
         )
 
-    def _build_body(self, summary: dict, signals: dict, mode: str) -> str:
+    def _build_news_section(self, news_summary: dict, mode: str) -> str:
+        assets = news_summary.get("assets", {})
+        if not assets or mode == "high_only":
+            return ""
+
+        lines = ["", "ニュース要約"]
+        for asset in assets.values():
+            summary_lines = asset.get("summary", [])
+            watch_points = asset.get("watch_points", [])
+            lines.append(
+                f"- {asset.get('asset_name', '')} ({asset.get('ticker', '')}) "
+                f"[{asset.get('sentiment', 'neutral')}/{asset.get('impact', 'low')}]"
+            )
+            for point in summary_lines[:3]:
+                lines.append(f"  - {point}")
+            for point in watch_points[:2]:
+                lines.append(f"  - 注目: {point}")
+
+        return "\n".join(lines)
+
+    def _build_body(self, summary: dict, signals: dict, news_summary: dict, mode: str) -> str:
         all_signal_items = signals.get("signals", [])
         if mode == "high_only":
             signal_items = [
@@ -67,6 +87,8 @@ class EmailNotifier:
             if signal_items
             else "- 異常シグナルはありません"
         )
+
+        news_section = self._build_news_section(news_summary, mode)
 
         return f"""{title}
 
@@ -85,12 +107,14 @@ class EmailNotifier:
 
 シグナル詳細
 {signal_lines}
+{news_section}
 """
 
     def send_report(
         self,
         portfolio_status_path: str = "data/portfolio_status.json",
         signals_path: str = "data/signals.json",
+        news_summary_path: str = "data/news_summary.json",
         mode: str = "daily_digest",
         verbose: bool = True,
     ) -> bool:
@@ -103,6 +127,7 @@ class EmailNotifier:
         portfolio_status = self._load_json(portfolio_status_path)
         summary = portfolio_status.get("summary", {})
         signals = self._load_json(signals_path)
+        news_summary = self._load_json(news_summary_path)
         high_total = signals.get("summary", {}).get("high", 0)
 
         if mode == "high_only" and high_total <= 0:
@@ -114,7 +139,7 @@ class EmailNotifier:
         message["Subject"] = self._build_subject(summary, signals, mode)
         message["From"] = self.from_address
         message["To"] = self.to_address
-        message.set_content(self._build_body(summary, signals, mode))
+        message.set_content(self._build_body(summary, signals, news_summary, mode))
 
         with smtplib.SMTP(self.smtp_host, self.smtp_port) as smtp:
             smtp.starttls()
