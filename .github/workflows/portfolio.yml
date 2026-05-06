@@ -2,6 +2,9 @@ name: Portfolio Automation
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
   schedule:
     - cron: "0 * * * *"
 
@@ -45,9 +48,14 @@ jobs:
           fi
 
       - name: Send Gmail report
-        if: ${{ secrets.GMAIL_SMTP_USER != '' && secrets.GMAIL_SMTP_APP_PASSWORD != '' && secrets.GMAIL_TO != '' }}
         env:
           GMAIL_SMTP_USER: ${{ secrets.GMAIL_SMTP_USER }}
           GMAIL_SMTP_APP_PASSWORD: ${{ secrets.GMAIL_SMTP_APP_PASSWORD }}
           GMAIL_TO: ${{ secrets.GMAIL_TO }}
-        run: python run.py --action email --email-mode ${{ steps.email_mode.outputs.mode }}
+        run: |
+          if [ -z "$GMAIL_SMTP_USER" ] || [ -z "$GMAIL_SMTP_APP_PASSWORD" ] || [ -z "$GMAIL_TO" ]; then
+            echo "Skip email: Gmail secrets are not fully configured."
+            exit 0
+          fi
+
+          python run.py --action email --email-mode ${{ steps.email_mode.outputs.mode }}
