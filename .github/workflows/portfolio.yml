@@ -25,15 +25,23 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Restore portfolio configs
+        env:
+          PORTFOLIO_YAML: ${{ secrets.PORTFOLIO_YAML }}
+          PORTFOLIO_PRIVATE_YAML: ${{ secrets.PORTFOLIO_PRIVATE_YAML }}
         run: |
           mkdir -p config
-          if [ -z "${{ secrets.PORTFOLIO_YAML }}" ]; then
+          if [ -z "$PORTFOLIO_YAML" ]; then
             echo "PORTFOLIO_YAML is not configured."
             exit 1
           fi
 
-          printf "%s" "${{ secrets.PORTFOLIO_YAML }}" > config/portfolio.yaml
-          printf "%s" "${{ secrets.PORTFOLIO_PRIVATE_YAML }}" > config/portfolio.private.yaml
+          if [ -z "$PORTFOLIO_PRIVATE_YAML" ]; then
+            echo "PORTFOLIO_PRIVATE_YAML is not configured."
+            exit 1
+          fi
+
+          printf "%s" "$PORTFOLIO_YAML" > config/portfolio.yaml
+          printf "%s" "$PORTFOLIO_PRIVATE_YAML" > config/portfolio.private.yaml
 
       - name: Fetch latest prices
         run: python run.py --action fetch --quiet
