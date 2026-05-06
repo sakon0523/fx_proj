@@ -1,0 +1,19 @@
+# portfolio.private.yaml の最小サンプル
+# 実運用ではこのファイルをコピーして config/portfolio.private.yaml を作成する
+
+portfolio:
+  holdings:
+    - id: "gold_fund"
+      quantity: 10000
+      unit_base: 10000
+      average_cost: 50000
+      current_price: 52000
+
+    - id: "ntt"
+      quantity: 100
+      average_cost: 150
+
+    - id: "nvidia"
+      quantity: 1
+      average_cost: 180
+      cost_fx_rate: 150

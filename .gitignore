@@ -26,4 +26,6 @@ data/*.csv
 # Project specific
 .env.local
 portfolio.local.yaml
+config/portfolio.yaml
 config/portfolio.private.yaml
+*.csv

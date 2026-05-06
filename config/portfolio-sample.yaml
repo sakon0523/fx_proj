@@ -1,0 +1,66 @@
+# portfolio.yaml の最小サンプル
+# 実運用ではこのファイルをコピーして config/portfolio.yaml を作成する
+
+portfolio:
+  holdings:
+    - id: "gold_fund"
+      name: "三菱UFJ 純金ファンド(ファインゴールド)"
+      ticker: "gold_fund_manual"
+      market: "JP"
+      asset_type: "fund"
+      category: "commodity"
+      currency: "JPY"
+      price_source: "manual_nav"
+
+    - id: "ntt"
+      name: "ＮＴＴ"
+      ticker: "9432.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "telecom"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "nvidia"
+      name: "エヌビディア"
+      ticker: "NVDA"
+      market: "US"
+      asset_type: "stock"
+      category: "ai_semiconductor"
+      currency: "USD"
+      price_source: "yfinance"
+
+targets:
+  ai_semiconductor:
+    name: "AI・半導体"
+    target_ratio: 0.40
+    description: "AI・半導体分野への投資"
+
+  telecom:
+    name: "通信"
+    target_ratio: 0.30
+    description: "国内通信・インフラ"
+
+  commodity:
+    name: "コモディティ"
+    target_ratio: 0.30
+    description: "金など実物資産"
+
+monitoring:
+  defaults:
+    daily_move_alert_pct: 5.0
+    volume_spike_ratio: 2.0
+    price_up_min_pct: 2.0
+    atr_alert_multiplier: 2.0
+    rsi_lower: 30.0
+    rsi_upper: 70.0
+    category_daily_move_alert_pct: 3.0
+    category_min_assets: 2
+
+  assets:
+    ntt:
+      daily_move_alert_pct: 2.0
+
+    nvidia:
+      daily_move_alert_pct: 4.0
+      rsi_upper: 75.0

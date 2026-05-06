@@ -47,7 +47,7 @@ class Asset:
 
 @dataclass
 class WatchItem:
-    """監視対象・買い候補"""
+    """購入候補"""
 
     id: str
     name: str
@@ -215,7 +215,10 @@ class PortfolioManager:
         return assets
 
     def _parse_watchlist(self) -> List[WatchItem]:
-        items = self._portfolio_config().get("watchlist", [])
+        portfolio = self._portfolio_config()
+        items = portfolio.get("purchase_list")
+        if items is None:
+            items = portfolio.get("watchlist", [])
         return [
             WatchItem(
                 id=item["id"],
@@ -387,7 +390,7 @@ class PortfolioManager:
             )
 
         if self.watchlist:
-            print("\n監視リスト")
+            print("\n購入リスト")
             print("-" * 80)
             for item in self.watchlist:
                 budget = f"予算 ¥{item.planned_budget:,.0f}" if item.planned_budget else ""

@@ -25,8 +25,10 @@
 pip install -r requirements.txt
 ```
 
-`config/portfolio.yaml` には公開してよい情報だけを書きます。  
-数量や取得単価は `config/portfolio.private.yaml` に書き、Git 管理しません。
+`config/portfolio.yaml` と `config/portfolio.private.yaml` はローカル管理前提です。  
+必要に応じて GitHub Actions の Secret から復元します。
+
+削除時の復旧用に `config/portfolio-sample.yaml` と `config/portfolio.private-sample.yaml` を置いています。
 
 ## 実行方法
 
@@ -75,6 +77,8 @@ python run.py --action email --email-mode high_only
 
 必須:
 
+- `PORTFOLIO_YAML`
+  `config/portfolio.yaml` の中身をそのまま登録
 - `PORTFOLIO_PRIVATE_YAML`
   `config/portfolio.private.yaml` の中身をそのまま登録
 
@@ -91,6 +95,7 @@ Gmail 通知を使う場合:
 
 ## セキュリティ
 
+- `config/portfolio.yaml` は `.gitignore` 済み
 - `config/portfolio.private.yaml` は `.gitignore` 済み
 - `data/*.json`, `data/*.png`, `data/*.csv` は `.gitignore` 済み
 - GitHub Actions では artifact を保存しない

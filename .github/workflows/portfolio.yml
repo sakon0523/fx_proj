@@ -24,9 +24,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Restore private portfolio config
+      - name: Restore portfolio configs
         run: |
           mkdir -p config
+          if [ -z "${{ secrets.PORTFOLIO_YAML }}" ]; then
+            echo "PORTFOLIO_YAML is not configured."
+            exit 1
+          fi
+
+          printf "%s" "${{ secrets.PORTFOLIO_YAML }}" > config/portfolio.yaml
           printf "%s" "${{ secrets.PORTFOLIO_PRIVATE_YAML }}" > config/portfolio.private.yaml
 
       - name: Fetch latest prices
