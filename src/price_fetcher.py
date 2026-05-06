@@ -250,7 +250,7 @@ class PriceFetcher:
             "indicators": indicators,
         }
 
-    def save_snapshot(self, output_path: str = "data/price_snapshot.json") -> dict:
+    def save_snapshot(self, output_path: str = "data/price_snapshot.json", verbose: bool = True) -> dict:
         snapshot = self.build_snapshot()
         if not snapshot["holdings"]:
             raise RuntimeError(
@@ -263,7 +263,8 @@ class PriceFetcher:
         with output.open("w", encoding="utf-8") as file:
             json.dump(snapshot, file, ensure_ascii=False, indent=2)
 
-        print(f"\n価格スナップショットを保存: {output_path}")
+        if verbose:
+            print(f"\n価格スナップショットを保存: {output_path}")
         return snapshot
 
 

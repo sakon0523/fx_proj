@@ -92,6 +92,7 @@ class EmailNotifier:
         portfolio_status_path: str = "data/portfolio_status.json",
         signals_path: str = "data/signals.json",
         mode: str = "daily_digest",
+        verbose: bool = True,
     ) -> bool:
         if not self.smtp_user or not self.smtp_password or not self.to_address:
             raise RuntimeError(
@@ -105,7 +106,8 @@ class EmailNotifier:
         high_total = signals.get("summary", {}).get("high", 0)
 
         if mode == "high_only" and high_total <= 0:
-            print("\nhigh シグナルがないため、メール送信をスキップしました。")
+            if verbose:
+                print("\nhigh シグナルがないため、メール送信をスキップしました。")
             return False
 
         message = EmailMessage()
@@ -119,7 +121,8 @@ class EmailNotifier:
             smtp.login(self.smtp_user, self.smtp_password)
             smtp.send_message(message)
 
-        print(f"\nメールを送信: {self.to_address}")
+        if verbose:
+            print(f"\nメールを送信: {self.to_address}")
         return True
 
 

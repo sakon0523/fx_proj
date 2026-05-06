@@ -30,16 +30,18 @@ jobs:
           printf "%s" "${{ secrets.PORTFOLIO_PRIVATE_YAML }}" > config/portfolio.private.yaml
 
       - name: Fetch latest prices
-        run: python run.py --action fetch
+        run: python run.py --action fetch --quiet
 
       - name: Generate reports and signals
-        run: python run.py --action all
+        run: python run.py --action all --quiet
 
       - name: Determine email mode
         id: email_mode
         run: |
           JST_HOUR=$(TZ=Asia/Tokyo date +%H)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=daily_digest" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "push" ]; then
             echo "mode=daily_digest" >> "$GITHUB_OUTPUT"
           elif [ "$JST_HOUR" = "08" ]; then
             echo "mode=daily_digest" >> "$GITHUB_OUTPUT"
@@ -58,4 +60,4 @@ jobs:
             exit 0
           fi
 
-          python run.py --action email --email-mode ${{ steps.email_mode.outputs.mode }}
+          python run.py --action email --email-mode ${{ steps.email_mode.outputs.mode }} --quiet

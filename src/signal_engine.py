@@ -306,13 +306,14 @@ class SignalEngine:
 
         print("\n" + "=" * 80)
 
-    def export_json(self, output_path: str = "data/signals.json") -> dict:
+    def export_json(self, output_path: str = "data/signals.json", verbose: bool = True) -> dict:
         result = self.generate_signals()
         output = Path(output_path)
         output.parent.mkdir(parents=True, exist_ok=True)
         with output.open("w", encoding="utf-8") as file:
             json.dump(result, file, ensure_ascii=False, indent=2)
-        print(f"\nシグナルをエクスポート: {output_path}")
+        if verbose:
+            print(f"\nシグナルをエクスポート: {output_path}")
         return result
 
 

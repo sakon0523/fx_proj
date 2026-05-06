@@ -410,7 +410,7 @@ class PortfolioManager:
 
         print("\n" + "=" * 80)
 
-    def export_json(self, output_path: str = "data/portfolio_status.json"):
+    def export_json(self, output_path: str = "data/portfolio_status.json", verbose: bool = True):
         summary = self.get_portfolio_summary()
         categories = self.get_category_summary()
         all_assets = self.get_all_assets_table()
@@ -443,7 +443,8 @@ class PortfolioManager:
         with output.open("w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=2)
 
-        print(f"\nデータをエクスポート: {output_path}")
+        if verbose:
+            print(f"\nデータをエクスポート: {output_path}")
 
 
 if __name__ == "__main__":

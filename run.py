@@ -36,6 +36,11 @@ def main():
         choices=["daily_digest", "high_only"],
         help="メール通知モード",
     )
+    parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="標準出力を最小限にする",
+    )
 
     args = parser.parse_args()
 
@@ -49,27 +54,29 @@ def main():
 
         fetcher = PriceFetcher(args.config)
         try:
-            fetcher.save_snapshot(args.price_snapshot)
+            fetcher.save_snapshot(args.price_snapshot, verbose=not args.quiet)
         except RuntimeError as exc:
             raise SystemExit(f"価格取得に失敗しました: {exc}") from exc
 
     manager = PortfolioManager(args.config, price_snapshot_path=args.price_snapshot)
 
     if args.action in ["summary", "all"]:
-        print("✅ ポートフォリオマネージャを起動します\n")
-        manager.print_summary()
+        if not args.quiet:
+            print("✅ ポートフォリオマネージャを起動します\n")
+            manager.print_summary()
 
     if args.action in ["signals", "all"]:
         from signal_engine import SignalEngine
 
         engine = SignalEngine(args.config, args.price_snapshot)
-        engine.print_signals()
+        if not args.quiet:
+            engine.print_signals()
         signal_path = Path(args.output) / "signals.json"
-        engine.export_json(str(signal_path))
+        engine.export_json(str(signal_path), verbose=not args.quiet)
 
     if args.action in ["json", "all"]:
         json_path = Path(args.output) / "portfolio_status.json"
-        manager.export_json(str(json_path))
+        manager.export_json(str(json_path), verbose=not args.quiet)
 
     if args.action == "email":
         from email_notifier import EmailNotifier
@@ -81,6 +88,7 @@ def main():
             str(portfolio_status_path),
             str(signals_path),
             mode=args.email_mode,
+            verbose=not args.quiet,
         )
 
     if args.action in ["viz", "all"]:
