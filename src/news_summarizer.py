@@ -133,14 +133,14 @@ class NewsSummarizer:
       "sentiment": "positive | neutral | negative",
       "impact": "low | medium | high",
       "summary": ["要点1", "要点2", "要点3"],
-      "watch_points": ["注目点1", "注目点2"]
+      "watch_points": ["注目点1", "注目点2", "注目点3"],
+      "headlines": ["見出し1", "見出し2", "見出し3"]
     }}
   }}
 }}
 
 条件:
-- summary は 2〜3 項目
-- watch_points は 0〜2 項目
+- summary, watch_points, headlines はそれぞれ日本語で3項目ずつ記載してください（なければ空欄）
 - 相場影響が不明なら neutral / low を選ぶ
 - JSON 以外の文章は出さない
 - 各 asset_id のキーはそのままにする
