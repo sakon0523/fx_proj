@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Data files
+data/*.json
+data/*.png
+data/*.csv
+
+# OS
+.DS_Store
+.env
+
+# Project specific
+.env.local
+portfolio.local.yaml
+config/portfolio.private.yaml

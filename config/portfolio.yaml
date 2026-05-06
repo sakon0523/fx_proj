@@ -1,0 +1,224 @@
+# 投資ポートフォリオ設定
+# このファイルには公開してもよいメタ情報だけを置く
+# 数量・取得単価・原価為替などの機微情報は config/portfolio.private.yaml に置く
+
+portfolio:
+  holdings:
+    - id: "gold_fund"
+      name: "三菱UFJ 純金ファンド(ファインゴールド)"
+      ticker: "gold_fund_manual"
+      market: "JP"
+      asset_type: "fund"
+      category: "commodity"
+      currency: "JPY"
+      price_source: "manual_nav"
+
+    - id: "emax_sp500_tsumitate_nisa"
+      name: "eMAXIS Slim 米国株式(S&P500)"
+      ticker: "emaxis_slim_sp500_tsumitate_manual"
+      market: "JP"
+      asset_type: "fund"
+      category: "us_index"
+      currency: "JPY"
+      price_source: "manual_nav"
+      account_type: "NISAつみたて投資枠"
+
+    - id: "emax_sp500_old_nisa"
+      name: "eMAXIS Slim 米国株式(S&P500)"
+      ticker: "emaxis_slim_sp500_old_nisa_manual"
+      market: "JP"
+      asset_type: "fund"
+      category: "us_index"
+      currency: "JPY"
+      price_source: "manual_nav"
+      account_type: "つみたてNISA"
+
+    - id: "disco"
+      name: "ディスコ"
+      ticker: "6146.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "semiconductor"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "fanuc"
+      name: "ファナック"
+      ticker: "6954.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "robotics"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "mhi"
+      name: "三菱重工業"
+      ticker: "7011.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "defense"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "khi"
+      name: "川崎重工業"
+      ticker: "7012.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "defense"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "ntt"
+      name: "ＮＴＴ"
+      ticker: "9432.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "telecom"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "softbank"
+      name: "ソフトバンク"
+      ticker: "9434.T"
+      market: "JP"
+      asset_type: "stock"
+      category: "telecom"
+      currency: "JPY"
+      price_source: "yfinance"
+
+    - id: "nebius"
+      name: "ネビウス・グループ"
+      ticker: "NBIS"
+      market: "US"
+      asset_type: "stock"
+      category: "space"
+      currency: "USD"
+      price_source: "yfinance"
+
+    - id: "nvidia"
+      name: "エヌビディア"
+      ticker: "NVDA"
+      market: "US"
+      asset_type: "stock"
+      category: "ai_semiconductor"
+      currency: "USD"
+      price_source: "yfinance"
+
+    - id: "rocket_lab"
+      name: "ロケット・ラボ"
+      ticker: "RKLB"
+      market: "US"
+      asset_type: "stock"
+      category: "space"
+      currency: "USD"
+      price_source: "yfinance"
+
+    - id: "micron"
+      name: "マイクロン テクノロジー"
+      ticker: "MU"
+      market: "US"
+      asset_type: "stock"
+      category: "semiconductor"
+      currency: "USD"
+      price_source: "yfinance"
+
+  watchlist:
+    - id: "kioxia"
+      name: "キオクシア"
+      ticker: "KIOXIA"
+      market: "JP"
+      asset_type: "stock"
+      category: "semiconductor"
+      currency: "JPY"
+      price_source: "manual"
+      planned_budget: 60000
+
+    - id: "jx_metals"
+      name: "JX金属"
+      ticker: "JXMG"
+      market: "JP"
+      asset_type: "stock"
+      category: "materials"
+      currency: "JPY"
+      price_source: "manual"
+      planned_budget: 28000
+
+targets:
+  ai_semiconductor:
+    name: "AI・半導体"
+    target_ratio: 0.25
+    description: "AI・半導体分野への投資"
+
+  space:
+    name: "宇宙"
+    target_ratio: 0.15
+    description: "宇宙関連企業（SpaceX含む）"
+
+  defense:
+    name: "防衛"
+    target_ratio: 0.10
+    description: "防衛関連企業"
+
+  us_index:
+    name: "米国インデックス"
+    target_ratio: 0.35
+    description: "S&P500インデックス"
+
+  commodity:
+    name: "コモディティ"
+    target_ratio: 0.05
+    description: "金など実物資産"
+
+  semiconductor:
+    name: "半導体"
+    target_ratio: 0.05
+    description: "個別半導体銘柄"
+
+  telecom:
+    name: "通信"
+    target_ratio: 0.03
+    description: "国内通信・インフラ"
+
+  robotics:
+    name: "ロボティクス"
+    target_ratio: 0.02
+    description: "自動化・ロボティクス"
+
+monitoring:
+  defaults:
+    daily_move_alert_pct: 5.0
+    volume_spike_ratio: 2.0
+    price_up_min_pct: 2.0
+    atr_alert_multiplier: 2.0
+    rsi_lower: 30.0
+    rsi_upper: 70.0
+    category_daily_move_alert_pct: 3.0
+    category_min_assets: 2
+
+  categories:
+    semiconductor:
+      daily_move_alert_pct: 4.0
+      volume_spike_ratio: 1.8
+
+    space:
+      daily_move_alert_pct: 6.0
+      category_daily_move_alert_pct: 4.0
+
+    telecom:
+      daily_move_alert_pct: 2.0
+
+  assets:
+    nvidia:
+      daily_move_alert_pct: 4.0
+      rsi_upper: 75.0
+
+    rocket_lab:
+      daily_move_alert_pct: 8.0
+      volume_spike_ratio: 2.5
+
+    ntt:
+      daily_move_alert_pct: 2.0
+
+    nebius:
+      daily_move_alert_pct: 7.0
