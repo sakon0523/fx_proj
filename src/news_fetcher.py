@@ -82,18 +82,35 @@ class NewsFetcher:
     def _normalize_article(self, article: dict) -> dict | None:
         if not isinstance(article, dict):
             return None
-        content = article.get("content", {})
+        content = article.get("content", article)
+        if not isinstance(content, dict):
+            return None
 
         provider = content.get("provider", {}) or {}
         click_url = content.get("clickThroughUrl", {}) or {}
         canonical_url = content.get("canonicalUrl", {}) or {}
+        title = content.get("title")
+        link = (
+            click_url.get("url")
+            or canonical_url.get("url")
+            or content.get("link")
+            or content.get("url")
+        )
+        if not title or not link:
+            return None
 
         return {
-            "title": content.get("title"),
-            "publisher": provider.get("displayName"),
-            "link": click_url.get("url") or canonical_url.get("url"),
-            "published_at": content.get("pubDate"),
-            "summary": content.get("summary"),
+            "title": title,
+            "publisher": provider.get("displayName")
+            or content.get("publisher")
+            or content.get("provider"),
+            "link": link,
+            "published_at": content.get("pubDate")
+            or self._normalize_timestamp(article.get("providerPublishTime")),
+            "summary": content.get("summary") or content.get("description") or "",
+            "related_tickers": content.get("relatedTickers")
+            or article.get("relatedTickers")
+            or [],
         }
 
     def _fetch_articles_for_ticker(self, ticker: str) -> List[dict]:

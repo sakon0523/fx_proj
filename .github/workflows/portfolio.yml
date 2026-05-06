@@ -1,3 +1,6 @@
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 name: Portfolio Automation
 
 on:
@@ -46,26 +49,11 @@ jobs:
       - name: Fetch latest prices
         run: python run.py --action fetch --quiet
 
-      - name: Determine news summary execution
-        id: news_summary_mode
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            JST_HOUR=$(TZ=Asia/Tokyo date +%H)
-            if [ "$JST_HOUR" = "08" ]; then
-              echo "enable_news_summary=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "enable_news_summary=false" >> "$GITHUB_OUTPUT"
-            fi
-          else
-            echo "enable_news_summary=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Generate reports and signals
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_NEWS_MODEL: ${{ secrets.GEMINI_NEWS_MODEL }}
-        run: |
-          python run.py --action all --quiet --enable-news-summary ${{ steps.news_summary_mode.outputs.enable_news_summary }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_NEWS_MODEL: ${{ secrets.OPENAI_NEWS_MODEL }}
+        run: python run.py --action all --quiet
 
       - name: Determine email mode
         id: email_mode

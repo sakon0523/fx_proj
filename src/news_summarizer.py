@@ -140,7 +140,8 @@ class NewsSummarizer:
 }}
 
 条件:
-- summary, watch_points, headlines はそれぞれ日本語で3項目ずつ記載してください（なければ空欄）
+- summary, watch_points, headlines はそれぞれ日本語で3項目ずつ記載してください
+- headlinesの文言が英語の場合は、可能な限り日本語に翻訳してください
 - 相場影響が不明なら neutral / low を選ぶ
 - JSON 以外の文章は出さない
 - 各 asset_id のキーはそのままにする
